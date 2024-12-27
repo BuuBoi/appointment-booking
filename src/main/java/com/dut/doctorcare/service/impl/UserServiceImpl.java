@@ -72,8 +72,8 @@ public class UserServiceImpl implements UserService {
         doctor = doctorMapper.toDoctor(request);
         doctor.setUser(user);
         doctor.setAddress(addressMapper.toAddress(request.getAddressDto()));
-        doctor.setSpecialization(specializationDao.findById(UUID.fromString(request.getSpecializationDto().getId()))
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+       // doctor.setSpecialization(specializationDao.findById(UUID.fromString(request.getSpecializationDto().getId()))
+         //       .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
         doctor = doctorDao.save(doctor);
 
         return doctorMapper.toDoctorResponse(doctor);

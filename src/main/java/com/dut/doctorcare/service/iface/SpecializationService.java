@@ -5,10 +5,12 @@ import com.dut.doctorcare.model.Role;
 import com.dut.doctorcare.model.Specialization;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface SpecializationService {
-    SpecializationDto createSpecialization(String specializationName);
-    SpecializationDto getSpecializationByName(String name);
-    List<SpecializationDto> getAllSpecialization();
-    void deleteSpecialization(String id);
+    SpecializationDto createSpecialization(SpecializationDto request);
+    List<SpecializationDto> getAllSpecializations();
+    Specialization getSpecializationById(UUID id);
+    SpecializationDto updateSpecialization(UUID id, SpecializationDto specialization);
+    void deleteSpecialization(UUID id);
 }

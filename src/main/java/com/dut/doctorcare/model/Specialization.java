@@ -1,5 +1,6 @@
 package com.dut.doctorcare.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
@@ -25,13 +26,11 @@ public class Specialization extends BaseClazz{
     @Column(nullable = false, unique = true, name = "name")
     private String name;
 
-    @Column(nullable = false, unique = true, name = "slug")
+    @Column(name = "slug")
     private String slug;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
     @OneToMany(mappedBy = "specialization")
+    @JsonIgnore
     private Set<Doctor> doctors;
 
 }

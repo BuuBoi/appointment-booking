@@ -4,8 +4,10 @@ import com.dut.doctorcare.dao.iface.SpecializationDao;
 import com.dut.doctorcare.dto.request.SpecializationDto;
 import com.dut.doctorcare.exception.AppException;
 import com.dut.doctorcare.exception.ErrorCode;
+import com.dut.doctorcare.exception.ResourceNotFoundException;
 import com.dut.doctorcare.mapper.SpecializationMapper;
 import com.dut.doctorcare.model.Specialization;
+import com.dut.doctorcare.repositories.SpecializationRepository;
 import com.dut.doctorcare.service.iface.SpecializationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,36 +20,63 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
+
 @Slf4j
 @Transactional
+@Service
+@RequiredArgsConstructor
 public class SpecializationServiceImpl implements SpecializationService {
-    private final SpecializationDao specializationDao;
+
+    private final SpecializationRepository specializationRepository;
     private final SpecializationMapper specializationMapper;
-    @Override
-    public SpecializationDto createSpecialization(String specialization) {
-        return specializationMapper.toSpecializationDto(specializationDao.save(specialization));
-    }
+
+//    public SpecializationServiceImpl(SpecializationRepository specializationRepository) {
+//        this.specializationRepository = specializationRepository;
+//
+//    }
 
     @Override
-    public SpecializationDto getSpecializationByName(String name) {
-        return specializationMapper.toSpecializationDto(specializationDao.findByName(name));
-    }
-
-    @Override
-    public List<SpecializationDto> getAllSpecialization() {
-        Map<String, Object> params = new HashMap<>();
-        List<Specialization> specializations = specializationDao.findAll(params);
-        return specializations.stream().map(specializationMapper::toSpecializationDto).collect(Collectors.toList());
-    }
-    @Override
-    public void deleteSpecialization(String id) {
-        try {
-            Specialization specialization = specializationDao.findById(UUID.fromString(id)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            specializationDao.softDelete(specialization.getId());
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.DATABASE_OPERATION_FAILED);
+    public SpecializationDto createSpecialization(SpecializationDto request) {
+        try{
+            log.info("Creating specialization: {}", request);
+            Specialization specialization = specializationMapper.toSpecialization(request);
+            System.out.println(specialization.getSlug());
+            log.info("Mapped to entity: {}", specialization);
+            Specialization specialization1 = specializationRepository.save(specialization);
+            log.info("Saved entity: {}", specialization1);
+            return specializationMapper.toSpecializationDto(specialization1);
+        }catch (Exception e){
+            log.error("Error creating specialization", e);
+            throw e;
         }
     }
+
+    @Override
+    public List<SpecializationDto> getAllSpecializations() {
+        List<Specialization> specializations= specializationRepository.findAll();
+        return specializations.stream().map(specialization -> specializationMapper.toSpecializationDto(specialization)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Specialization getSpecializationById(UUID id) {
+        return specializationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Specialization not found with id: " + id));
+    }
+
+    @Override
+    public SpecializationDto updateSpecialization(UUID id, SpecializationDto specializationDetails) {
+        Specialization specialization = getSpecializationById(id);
+        specialization.setName(specializationDetails.getName());
+        specialization.setSlug(specializationDetails.getSlug());
+        Specialization spe =  specializationRepository.save(specialization);
+
+        return specializationMapper.toSpecializationDto(spe);
+    }
+
+    @Override
+    public void deleteSpecialization(UUID id) {
+        Specialization specialization = getSpecializationById(id);
+        specializationRepository.delete(specialization);
+    }
 }
+

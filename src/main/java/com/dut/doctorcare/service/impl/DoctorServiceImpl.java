@@ -43,11 +43,11 @@ public class DoctorServiceImpl implements DoctorService {
         Doctor doctor = doctorDao.findById(user.getId()).orElse(null);
         if(doctor == null) {
             Address address = addressDao.save(addressMapper.toAddress(request.getAddressDto()));
-            Specialization spec = specializationDao.findById(UUID.fromString(request.getSpecializationDto().getId())).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+           // Specialization spec = specializationDao.findById(UUID.fromString(request.getSpecializationDto().getId())).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
             doctor = doctorMapper.toDoctor(request);
             doctor.setAddress(address);
             doctor.setUser(user);
-            doctor.setSpecialization(spec);
+           // doctor.setSpecialization(spec);
             return doctorMapper.toDoctorResponse(doctorDao.save(doctor));
         } else {
             doctorMapper.updateDoctorFromDto(request, doctor);
@@ -60,10 +60,10 @@ public class DoctorServiceImpl implements DoctorService {
                 address = addressDao.update(address);
                 doctor.setAddress(address);
             }
-            Specialization spec = specializationDao.findById(UUID.fromString(request.getSpecializationDto().getId())).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            if (!doctor.getSpecialization().getId().equals(spec.getId())) {
-                doctor.setSpecialization(spec);
-            }
+//           // Specialization spec = specializationDao.findById(UUID.fromString(request.getSpecializationDto().getId())).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+//            if (!doctor.getSpecialization().getId().equals(spec.getId())) {
+//                doctor.setSpecialization(spec);
+//            }
             return doctorMapper.toDoctorResponse(doctorDao.update(doctor));
         }
     }
