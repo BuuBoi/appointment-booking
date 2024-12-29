@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "addresses")
 public class Address extends BaseClazz {
-
+    //Address: city, district, ward, street
     @Column(name = "province", nullable = false)
     private String province;
 

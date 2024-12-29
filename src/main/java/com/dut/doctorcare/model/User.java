@@ -22,15 +22,24 @@ import java.util.Set;
 @Table(name = "users")
 public class User extends BaseClazz {
 
+	@Column(name = "full_name", nullable = false, unique = true)
+	private String fullName;
+
 	@Column(name = "email", nullable = false, unique = true)
 	private String email;
 
 	@Column(name = "password_hash", nullable = false)
 	private String passwordHash;
 
-	@ManyToOne
-	@JoinColumn(name = "role_id", nullable = false)
-	private Role role;
+	@Column(name="email_verified")
+	private boolean emailVerified;
+
+	@Column(name= "image_url")
+	private String imageUrl;
+
+
+	@Column(name = "role", nullable = false)
+	private String role;
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private Patient patient;

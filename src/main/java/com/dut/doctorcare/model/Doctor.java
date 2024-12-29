@@ -55,17 +55,72 @@ public class Doctor extends BaseClazz {
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "doctor")
-    private List<Schedule> schedules;
+    private List<WeeklyAvailable> weeklyAvailables;
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    private String phone;
-    private String position;
-    private Patient.Gender gender;
-    private LocalDate dateOfBirth;
-    private String bio;
-    private int experience;
+
+
     private BigDecimal price;
+    private String position;
+    @Column(name = "phone_number")
+    private String phone; //
+
+    @Column(name="gender")
+    private String gender; //
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth; //
+
+    @Column(name = "medical_license")
+    private String medicalLicense; //
+
+    @Column(name = "medical_license_expiry")
+    private LocalDate medicalLicenseExpiry; //
+
+    @Column(name = "bio")
+    private String bio;//
+
+    @Column(name = "profile_picture")
+    private String profilePicture;//
+
+    @Column(name = "years_of_experience")
+    private int yearsOfExperience;//
+
+    @Column(name = "email_address")
+    private String emailAddress;//
+
+    @Column(name = "page")
+    private String page;//
+
+    @Column(name = "hospital_name")
+    private String hospitalName;
+
+    @Column(name = "hospital_address")
+    private String hospitalAddress;
+
+    @Column(name = "hospital_contact_number")
+    private String hospitalContactNumber;
+
+    @Column(name = "hospital_email_address")
+    private String hospitalEmailAddress;
+
+    @Column(name = "hospital_website")
+    private String hospitalWebsite;
+
+    @Column(name = "medical_school")
+    private String medicalSchool;
+
+    @Column(name = "special_primary")
+    private String specialPrimary;
+
+    @Column(name = "special_secondary")
+    private LocalDate yearGraduation;
+
+    @Column(name = "trucking_number")
+    private String truckingNumber;
+
+
 
 }

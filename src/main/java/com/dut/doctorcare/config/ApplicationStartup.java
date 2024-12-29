@@ -28,18 +28,18 @@ public class ApplicationStartup {
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void createAdminUser() {
-        if (userDao.findByEmail("admin@gmail.com").isEmpty()) {
-            if(roleDao.findRole(Role.RoleName.ADMIN) == null){
-                Role adminRole = new Role();
-                adminRole.setRoleName(Role.RoleName.ADMIN);
-                roleDao.save(adminRole);
-            }
-            log.error("Admin role created");
+        if (userDao.findByEmail("admin888@gmail.com").isEmpty()) {
+//            if(roleDao.findRole(Role.RoleName.ADMIN) == null){
+//                Role adminRole = new Role();
+//                adminRole.setRoleName(Role.RoleName.ADMIN);
+//                roleDao.save(adminRole);
+//            }
+//            log.error("Admin role created");
             User adminUser = new User();
             adminUser.setEmail("admin888@gmail.com");
             adminUser.setPasswordHash(passwordEncoder.encode("admin888"));
-            //adminUser.setDisplayName("Admin");
-            adminUser.setRole(roleDao.findRole(Role.RoleName.ADMIN));
+            adminUser.setFullName("Admin DoctorCare");
+            adminUser.setRole("ADMIN");
             userDao.save(adminUser);
             System.out.println("Admin user created");
         }

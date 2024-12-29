@@ -91,7 +91,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
     private String buildScope(User user) {
-        return user.getRole().getRoleName().name();
+        return user.getRole();
     }
 
 }

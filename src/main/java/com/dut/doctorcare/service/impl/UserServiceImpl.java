@@ -54,44 +54,46 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public DoctorResponse registerDoctor(CreateDoctorRequest request) {
-        if (userDao.findByEmail(request.getUserRegistrationDto().getEmail()).isPresent()) {
-            throw new AppException(ErrorCode.Email_ALREADY_EXISTS);
-        }
-        // Create user
-         User user = new User();
-        Role role = roleService.findRole(Role.RoleName.DOCTOR);
-        if (role == null) {
-            role = roleService.createRole(Role.RoleName.DOCTOR);
-        }
-        user = userMapper.toUser(request.getUserRegistrationDto());
-        user.setRole(role);
-        user = userDao.save(user);
-
-        // Create doctor
-        Doctor doctor = new Doctor();
-        doctor = doctorMapper.toDoctor(request);
-        doctor.setUser(user);
-        doctor.setAddress(addressMapper.toAddress(request.getAddressDto()));
-       // doctor.setSpecialization(specializationDao.findById(UUID.fromString(request.getSpecializationDto().getId()))
-         //       .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
-        doctor = doctorDao.save(doctor);
-
-        return doctorMapper.toDoctorResponse(doctor);
+//        if (userDao.findByEmail(request.getUserRegistrationDto().getEmail()).isPresent()) {
+//            throw new AppException(ErrorCode.Email_ALREADY_EXISTS);
+//        }
+//        // Create user
+//         User user = new User();
+//        Role role = roleService.findRole(Role.RoleName.DOCTOR);
+//        if (role == null) {
+//            role = roleService.createRole(Role.RoleName.DOCTOR);
+//        }
+//        user = userMapper.toUser(request.getUserRegistrationDto());
+//        user.setRole(role);
+//        user = userDao.save(user);
+//
+//        // Create doctor
+//        Doctor doctor = new Doctor();
+//        doctor = doctorMapper.toDoctor(request);
+//        doctor.setUser(user);
+//        doctor.setAddress(addressMapper.toAddress(request.getAddressDto()));
+//       // doctor.setSpecialization(specializationDao.findById(UUID.fromString(request.getSpecializationDto().getId()))
+//         //       .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+//        doctor = doctorDao.save(doctor);
+//
+//        return doctorMapper.toDoctorResponse(doctor);
+        return null;
     }
     @Override
     public UserResponseDto registerPatient(UserRegistrationDto userRegistrationDto) {
-        if (userDao.findByEmail(userRegistrationDto.getEmail()).isPresent()) {
-            throw new AppException(ErrorCode.Email_ALREADY_EXISTS);
-        }
-        Role role = roleService.findRole(Role.RoleName.USER);
-        if (role == null) {
-            role = roleService.createRole(Role.RoleName.USER);
-        }
-        User user = new User();
-        user = userMapper.toUser(userRegistrationDto);
-        user.setRole(role); // Thiết lập vai trò mặc định
-        user = userDao.save(user);
-        return userMapper.toUserResponseDto(user);
+//        if (userDao.findByEmail(userRegistrationDto.getEmail()).isPresent()) {
+//            throw new AppException(ErrorCode.Email_ALREADY_EXISTS);
+//        }
+//        Role role = roleService.findRole(Role.RoleName.USER);
+//        if (role == null) {
+//            role = roleService.createRole(Role.RoleName.USER);
+//        }
+//        User user = new User();
+//        user = userMapper.toUser(userRegistrationDto);
+//        user.setRole(role); // Thiết lập vai trò mặc định
+//        user = userDao.save(user);
+//        return userMapper.toUserResponseDto(user);
+        return null;
 
     }
 
