@@ -17,11 +17,10 @@ public interface DoctorMapper {
     @Mapping(target = "phone", source = "phoneNumber")
     Doctor toDoctor(DoctorRequest doctorRequest);
 
-    @Mapping(target = "gender", source = "gender", qualifiedByName = "genderToString")
-    @Mapping(target = "dateOfBirth", source = "dateOfBirth", qualifiedByName = "localDateToString")
-    @Mapping(target = "addressDto", source = "address")
-    @Mapping(target = "specializationDto", source = "specialization")
-    @Mapping(target = "phoneNumber", source = "phone")
+//    @Mapping(target = "gender", source = "gender", qualifiedByName = "genderToString")
+//    @Mapping(target = "dateOfBirth", source = "dateOfBirth", qualifiedByName = "localDateToString")
+//    @Mapping(target = "address", source = "address")
+//    @Mapping(target = "specializationDto", source = "specialization")
     DoctorResponse toDoctorResponse(Doctor doctor);
 
     @Mapping(target = "id", ignore = true)

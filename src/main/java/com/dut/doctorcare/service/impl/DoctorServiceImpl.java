@@ -18,13 +18,17 @@ import com.dut.doctorcare.model.Specialization;
 import com.dut.doctorcare.model.User;
 import com.dut.doctorcare.repositories.DoctorRepository;
 import com.dut.doctorcare.repositories.UserRepository;
+import com.dut.doctorcare.service.iface.AddressService;
 import com.dut.doctorcare.service.iface.DoctorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,6 +42,7 @@ public class DoctorServiceImpl implements DoctorService {
     private final AddressMapper addressMapper;
     private final SpecializationMapper specializationMapper;
     private final AddressDao addressDao;
+    private final AddressService addressService;
     private final UserDao userDao;
     private final SpecializationDao specializationDao;
     private final UserRepository userRepository;
@@ -112,4 +117,79 @@ public class DoctorServiceImpl implements DoctorService {
         // Lưu Doctor vào database
         return doctorRepository.save(doctor);
     }
+    @Override
+    public Doctor updateDoctor(String id, Map<String,Object> fields) {
+        // Lấy thông tin Doctor từ database
+        Optional<Doctor> doctorOptional = doctorRepository.findById(UUID.fromString(id));
+        if (doctorOptional.isEmpty()) {
+            throw new IllegalArgumentException("Doctor không tồn tại với ID: " + id);
+        }
+
+        Doctor doctor = doctorOptional.get();
+        // Khởi tạo các quan hệ lazy-loaded của Doctor
+        Hibernate.initialize(doctor.getAddress()); // Khởi tạo Address nếu cần
+       // Hibernate.initialize(doctor.getSpecialization()); // Khởi tạo Specialization nếu cần
+
+        // Cập nhật thông tin Doctor
+        fields.forEach((key, value) -> {
+            switch (key) {
+
+                case "hospitalName":
+                    doctor.setHospitalName((String) value);
+                    break;
+                case "hospitalAddress":
+                    doctor.setHospitalAddress((String) value);
+                    break;
+                case "hospitalContactNumber":
+                    doctor.setHospitalContactNumber((String) value);
+                    break;
+                case "hospitalEmailAddress":
+                    doctor.setHospitalEmailAddress((String) value);
+                    break;
+                case "hospitalWebsite":
+                    doctor.setHospitalWebsite((String) value);
+                    break;
+                case "yearGraduation":
+                    doctor.setYearGraduation(LocalDate.parse((String) value));
+                    break;
+                case "medicalSchool":
+                    doctor.setMedicalSchool((String) value);
+                    break;
+                case "specialPrimary":
+                    doctor.setSpecialPrimary((String) value);
+                    break;
+                case "id":
+                    break;
+                case "imageUrl":
+//                    doctor.setProfilePicture((String) value);
+//                    break;
+                    break;
+                case "page":
+                    doctor.setPage((String) value);
+                    break;
+//                case "dateOfBirth":
+//                    doctor.setDateOfBirth((String) value);
+//                    break;
+                case "emailAddress":
+                    doctor.setEmailAddress((String) value);
+                    break;
+                case "phone":
+                    doctor.setPhone((String) value);
+                    break;
+                case "city":
+                case "district":
+                case "ward":
+                case "street":
+                    // Kiểm tra và xử lý Address
+                    Address updatedAddress = addressService.createOrUpdateAddress(doctor.getAddress(), fields);
+                    doctor.setAddress(updatedAddress);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown field: " + key);
+    }});
+
+        // Lưu Doctor vào database
+        return doctorRepository.save(doctor);
+    }
 }
+

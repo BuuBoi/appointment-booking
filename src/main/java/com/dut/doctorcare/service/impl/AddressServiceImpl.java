@@ -10,12 +10,14 @@ import com.dut.doctorcare.exception.AppException;
 import com.dut.doctorcare.exception.ErrorCode;
 import com.dut.doctorcare.model.Address;
 import com.dut.doctorcare.model.User;
+import com.dut.doctorcare.repositories.AddressRepository;
 import com.dut.doctorcare.service.iface.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -23,11 +25,13 @@ public class AddressServiceImpl implements AddressService {
 
     private final AddressDao addressDao;
     private final UserDao userDao;
+    private final AddressRepository addressRepository;
 
     @Autowired
-    public AddressServiceImpl(AddressDao addressDao, HibernateUserDao userDao) {
+    public AddressServiceImpl(AddressDao addressDao, HibernateUserDao userDao, AddressRepository addressRepository) {
         this.addressDao = addressDao;
         this.userDao = userDao;
+        this.addressRepository = addressRepository;
     }
 
     @Transactional
@@ -69,11 +73,31 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public void deleteAddress(String addressId) {
-
     }
 
     @Override
     public List<AddressResponseDto> getAllAddressesByUserId() {
         return null;
+    }
+
+    @Override
+    public Address createOrUpdateAddress(Address address, Map<String, Object> fields) {
+        if(address == null) {
+            address = new Address();
+        }
+        //Address: city, district, ward, street
+        if(fields.containsKey("city")) {
+            address.setProvince((String) fields.get("city"));
+        }
+        if(fields.containsKey("district")) {
+            address.setDistrict((String) fields.get("district"));
+        }
+        if(fields.containsKey("ward")) {
+            address.setWard((String) fields.get("ward"));
+        }
+        if(fields.containsKey("street")) {
+            address.setDetails((String) fields.get("street"));
+        }
+        return addressRepository.save(address);
     }
 }

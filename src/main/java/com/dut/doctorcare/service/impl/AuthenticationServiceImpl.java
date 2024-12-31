@@ -76,6 +76,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .issuer("buu.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(new Date().getTime() + 24 * 60 * 60 * 1000)) //Xac dinh thoi han cua token
+                .claim("id", user.getId().toString()) //Xac dinh id cua token
+                .claim("email", user.getEmail()) //Xac dinh email cua token
+                .claim("role", user.getRole()) //Xac dinh role cua token
                 .claim("scope", buildScope(user)) //Xac dinh pham vi cua token
                 .build();
         Payload payload = new Payload(claimSet.toJSONObject()); //Chuyen claimSet thanh JSON, tao Payload

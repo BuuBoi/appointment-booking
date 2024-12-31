@@ -19,7 +19,7 @@ public class UserBaseDto {
 
     private String gender;
 
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 
     private AddressDto addressDto;
 }

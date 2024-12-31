@@ -30,26 +30,27 @@ public class SecurityConfig {
             "/api/users/register",
             "/api/auth/token",
             "/api/auth/introspect",
-            "/api/register"
+            "/api/register",
+            "api/weekly-available/grouped"
     };
 
     @Value("${jwt.signerKey}")
     protected String SIGNING_KEY;
 
-    @Bean
-    @Order(1) // Đặt thứ tự ưu tiên thấp hơn các cấu hình khác
-    public SecurityFilterChain permitAllSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable) // Vô hiệu hóa CSRF
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Cho phép tất cả các yêu cầu
-                )
-                .oauth2ResourceServer(AbstractHttpConfigurer::disable) // Vô hiệu hóa OAuth2 Resource Server nếu có
-                .formLogin(AbstractHttpConfigurer::disable) // Vô hiệu hóa form đăng nhập
-                .httpBasic(AbstractHttpConfigurer::disable); // Vô hiệu hóa HTTP Basic
-
-        return http.build();
-    }
+//    @Bean
+//    @Order(1) // Đặt thứ tự ưu tiên thấp hơn các cấu hình khác
+//    public SecurityFilterChain permitAllSecurityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf(AbstractHttpConfigurer::disable) // Vô hiệu hóa CSRF
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll() // Cho phép tất cả các yêu cầu
+//                )
+//                .oauth2ResourceServer(AbstractHttpConfigurer::disable) // Vô hiệu hóa OAuth2 Resource Server nếu có
+//                .formLogin(AbstractHttpConfigurer::disable) // Vô hiệu hóa form đăng nhập
+//                .httpBasic(AbstractHttpConfigurer::disable); // Vô hiệu hóa HTTP Basic
+//
+//        return http.build();
+//    }
 
     @Bean
     @Order(2)

@@ -7,8 +7,11 @@ import com.dut.doctorcare.dto.response.DoctorResponse;
 import com.dut.doctorcare.dto.response.PatientResponse;
 import com.dut.doctorcare.model.Doctor;
 
+import java.util.Map;
+
 public interface DoctorService {
     DoctorResponse saveOrUpdate(DoctorRequest request);
     DoctorResponse getMyInfo();
     Doctor createDoctor(DoctorCreateDTO request);
+    Doctor updateDoctor(String doctorId, Map<String, Object> fields);
 }

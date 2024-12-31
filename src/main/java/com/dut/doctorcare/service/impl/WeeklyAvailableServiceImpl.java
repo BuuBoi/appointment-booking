@@ -8,6 +8,7 @@ import com.dut.doctorcare.service.iface.WeeklyAvailableService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,6 +47,7 @@ public class WeeklyAvailableServiceImpl implements WeeklyAvailableService {
     }
 
     @Override
+    @PreAuthorize("hasRole('DOCTOR')")
     public void updateWeeklySchedule(UUID doctorId, Map<String, List<String>> scheduleMap) {
         log.info("Updating weekly schedule for doctor with id: {}", doctorId);
         log.info("New schedule: {}", scheduleMap);
