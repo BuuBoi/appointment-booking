@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -17,11 +18,12 @@ import java.time.LocalTime;
 @SuperBuilder
 @Entity
 @Table(name = "appointments", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"doctor_id", "appointment_date", "time"})})
+        @UniqueConstraint(columnNames = {"doctor_id", "appointment_date", "appointment_time"})})
 public class Appointment extends BaseClazz {
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(name = "status")
+    private Status status = Status.PENDING;
     @Column(name="fee")
     private Double fee;
 
@@ -33,13 +35,51 @@ public class Appointment extends BaseClazz {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
+    @ManyToOne
+    @JoinColumn(name ="user_id")
+    private User user;
+
     @Column(name = "appointment_date", nullable = false)
     private LocalDate appointmentDate;
 
-    @Column(name = "time", nullable = false)
-    private String time;
+    @Column(name = "appointment_time", nullable = false)
+    private String appointmentTime;
+
+    @Column(name="address")
+    private String address;
+
+
+    @Column(name="appointment_created_date")
+    private LocalDateTime appointmentCreatedDate;
+
+    @Column(name="dob")
+    private LocalDate dob;
+
+    @Column(name="email")
+    private String email;
+
+    @Column(name="fullName")
+    private String fullName;
+
+    @Column(name="gender")
+    private String gender;
+
+    @Column(name="medicalDocument")
+    private String medicalDocument;
+
+    @Column(name="occupation")
+    private String occupation;
+
+    @Column(name="phone")
+    private String phone;
+
+    @Column(name="reason")
+    private String reason;
+
 
     public enum Status {
         PENDING, ACCEPTED, REJECTED, COMPLETED
     }
+
 }
+

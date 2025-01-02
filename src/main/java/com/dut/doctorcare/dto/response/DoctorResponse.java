@@ -1,9 +1,7 @@
 package com.dut.doctorcare.dto.response;
 
-import com.dut.doctorcare.dto.request.AddressDto;
-import com.dut.doctorcare.dto.request.DoctorRequest;
-import com.dut.doctorcare.dto.request.SpecializationDto;
-import com.dut.doctorcare.dto.request.UserBaseDto;
+import com.dut.doctorcare.dto.request.*;
+import com.dut.doctorcare.model.WeeklyAvailable;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +11,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -43,4 +42,7 @@ public class DoctorResponse {
     private String specialPrimary;
     private LocalDate yearGraduation;
     private String truckingNumber;
+    private ServiceDto service;
+    private SpecializationDto specialization;
+    private Map<String, List<String>> weeklyAvailables;
 }

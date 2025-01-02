@@ -6,17 +6,23 @@ import com.dut.doctorcare.dao.iface.SpecializationDao;
 import com.dut.doctorcare.dao.iface.UserDao;
 import com.dut.doctorcare.dto.request.DoctorCreateDTO;
 import com.dut.doctorcare.dto.request.DoctorRequest;
+import com.dut.doctorcare.dto.request.ServiceDto;
+import com.dut.doctorcare.dto.request.SpecializationDto;
 import com.dut.doctorcare.dto.response.DoctorResponse;
 import com.dut.doctorcare.exception.AppException;
 import com.dut.doctorcare.exception.ErrorCode;
 import com.dut.doctorcare.mapper.AddressMapper;
 import com.dut.doctorcare.mapper.DoctorMapper;
+import com.dut.doctorcare.mapper.ServiceMapper;
 import com.dut.doctorcare.mapper.SpecializationMapper;
 import com.dut.doctorcare.model.Address;
 import com.dut.doctorcare.model.Doctor;
-import com.dut.doctorcare.model.Specialization;
+
 import com.dut.doctorcare.model.User;
+import com.dut.doctorcare.model.WeeklyAvailable;
 import com.dut.doctorcare.repositories.DoctorRepository;
+import com.dut.doctorcare.repositories.ServiceRepository;
+import com.dut.doctorcare.repositories.SpecializationRepository;
 import com.dut.doctorcare.repositories.UserRepository;
 import com.dut.doctorcare.service.iface.AddressService;
 import com.dut.doctorcare.service.iface.DoctorService;
@@ -27,10 +33,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -47,6 +56,10 @@ public class DoctorServiceImpl implements DoctorService {
     private final SpecializationDao specializationDao;
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
+    private final ServiceMapper serviceMapper;
+    private final ServiceRepository serviceRepository;
+    private final SpecializationRepository specializationRepository;
+
     @Override
     public DoctorResponse saveOrUpdate(DoctorRequest request) {
         var context = SecurityContextHolder.getContext();
@@ -79,6 +92,37 @@ public class DoctorServiceImpl implements DoctorService {
             return doctorMapper.toDoctorResponse(doctorDao.update(doctor));
         }
     }
+
+    @Override
+    public List<DoctorResponse> getAllDoctors() {
+        List<Doctor> doctors = doctorRepository.findAll();
+        doctors.forEach(doctor -> doctor.getWeeklyAvailables().size()); //dam bao duoc load truoc khi mapper
+        return doctors.stream().map(doctor -> {
+            DoctorResponse response = doctorMapper.toDoctorResponse(doctor);
+            Map<String,List<String>> groupedweeklyAvailable = doctor.getWeeklyAvailables().stream()
+                    .collect(Collectors.groupingBy(
+                            WeeklyAvailable::getDateOfWeek,
+                            Collectors.mapping(weeklyAvailable -> weeklyAvailable.getTimeSlot().toString(), Collectors.toList())
+                    ));
+            response.setWeeklyAvailables(groupedweeklyAvailable);
+            return response;
+//            doctorMapper.toDoctorResponse(doctor)).collect(Collectors.toList()
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public DoctorResponse getDoctorById(String doctorId) {
+        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
+        Map<String,List<String>> groupedweeklyAvailable = doctor.getWeeklyAvailables().stream()
+                .collect(Collectors.groupingBy(
+                        WeeklyAvailable::getDateOfWeek,
+                        Collectors.mapping(weeklyAvailable -> weeklyAvailable.getTimeSlot().toString(), Collectors.toList())
+                ));
+        doctorResponse.setWeeklyAvailables(groupedweeklyAvailable);
+        return doctorResponse;
+    }
+
     @Override
     public DoctorResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
@@ -133,7 +177,10 @@ public class DoctorServiceImpl implements DoctorService {
         // Cập nhật thông tin Doctor
         fields.forEach((key, value) -> {
             switch (key) {
-
+                case "price":
+                    BigDecimal price = new BigDecimal(value.toString());
+                    doctor.setPrice(price);
+                    break;
                 case "hospitalName":
                     doctor.setHospitalName((String) value);
                     break;
@@ -189,6 +236,40 @@ public class DoctorServiceImpl implements DoctorService {
     }});
 
         // Lưu Doctor vào database
+        return doctorRepository.save(doctor);
+    }
+
+    @Override
+    public ServiceDto getServiceByDoctorId(String doctorId) {
+        var service =  doctorRepository.findById(UUID.fromString(doctorId)).map(
+            Doctor::getService).orElse(null);
+        ServiceDto serviceDto = new ServiceDto();
+        serviceDto = serviceMapper.toServiceDto(service);
+        return serviceDto;
+    }
+
+    @Override
+    public Doctor setServiceForDoctor(String doctorId, String serviceId) {
+        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        com.dut.doctorcare.model.Service service = serviceRepository.findById(UUID.fromString(serviceId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        doctor.setService(service);
+        return doctorRepository.save(doctor);
+    }
+
+    @Override
+    public SpecializationDto getSpecializationByDoctorId(String doctorId) {
+        var service =  doctorRepository.findById(UUID.fromString(doctorId)).map(
+                Doctor::getSpecialization).orElse(null);
+        SpecializationDto serviceDto = new SpecializationDto();
+        serviceDto = specializationMapper.toSpecializationDto(service);
+        return serviceDto;
+    }
+
+    @Override
+    public Doctor setSpecializationForDoctor(String doctorId, String serviceId) {
+        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        com.dut.doctorcare.model.Specialization service = specializationRepository.findById(UUID.fromString(serviceId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        doctor.setSpecialization(service);
         return doctorRepository.save(doctor);
     }
 }

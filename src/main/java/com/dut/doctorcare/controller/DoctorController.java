@@ -1,13 +1,12 @@
 package com.dut.doctorcare.controller;
 
-import com.dut.doctorcare.dto.request.DoctorCreateDTO;
-import com.dut.doctorcare.dto.request.DoctorRequest;
-import com.dut.doctorcare.dto.request.PatientRequest;
+import com.dut.doctorcare.dto.request.*;
 import com.dut.doctorcare.dto.response.ApiResponse;
 import com.dut.doctorcare.dto.response.DoctorResponse;
 import com.dut.doctorcare.dto.response.PatientResponse;
 import com.dut.doctorcare.mapper.DoctorMapper;
 import com.dut.doctorcare.model.Doctor;
+import com.dut.doctorcare.model.Service;
 import com.dut.doctorcare.service.iface.DoctorService;
 import com.dut.doctorcare.service.iface.PatientService;
 import jakarta.validation.Valid;
@@ -18,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.print.Doc;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -46,10 +46,24 @@ public class DoctorController {
                 .build();
     }
 
+    @GetMapping
+    public ApiResponse<List<DoctorResponse>> getAllDoctors() {
+        List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
+        return ApiResponse.<List<DoctorResponse>>builder()
+                .status(200)
+                .data(doctorResponses)
+                .build();
+    }
     @PostMapping
     public ResponseEntity<Doctor> createDoctor(@Valid @RequestBody DoctorCreateDTO doctorCreateDTO) {
         Doctor createdDoctor = doctorService.createDoctor(doctorCreateDTO);
         return ResponseEntity.ok(createdDoctor);
+    }
+
+    @GetMapping("/{doctorId}")
+    public ResponseEntity<DoctorResponse> getDoctorById(@PathVariable String doctorId) {
+        DoctorResponse doctorResponse = doctorService.getDoctorById(doctorId);
+        return ResponseEntity.ok(doctorResponse);
     }
 
     @PutMapping("/{doctorId}")
@@ -61,7 +75,38 @@ public class DoctorController {
         return ResponseEntity.ok(doctorResponse1);
     }
 
+    @GetMapping("/{doctorId}/service")
+    public ResponseEntity<ServiceDto> getServiceByDoctorId(@PathVariable String doctorId) {
+        ServiceDto serviceDto = doctorService.getServiceByDoctorId(doctorId);
+        return ResponseEntity.ok(serviceDto);
+    }
 
+    @GetMapping("/{doctorId}/specialization")
+    public ResponseEntity<SpecializationDto> getSpecializationByDoctorId(@PathVariable String doctorId) {
+        SpecializationDto serviceDto = doctorService.getSpecializationByDoctorId(doctorId);
+        return ResponseEntity.ok(serviceDto);
+    }
+
+    // API để set service cho bác sĩ
+    @PostMapping("/{doctorId}/service/{serviceId}")
+    public ResponseEntity<DoctorResponse> setServiceForDoctor(
+            @PathVariable String doctorId,
+            @PathVariable String serviceId) {
+        Doctor doctor = doctorService.setServiceForDoctor(doctorId, serviceId);
+        Service service = doctor.getService();
+        DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
+        return ResponseEntity.ok(doctorResponse);
+    }
+
+    // API để set service cho bác sĩ
+    @PostMapping("/{doctorId}/specialization/{specialId}")
+    public ResponseEntity<DoctorResponse> setSpecializationForDoctor(
+            @PathVariable String doctorId,
+            @PathVariable String specialId) {
+        Doctor doctor = doctorService.setSpecializationForDoctor(doctorId, specialId);
+        DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
+        return ResponseEntity.ok(doctorResponse);
+    }
 
 
 

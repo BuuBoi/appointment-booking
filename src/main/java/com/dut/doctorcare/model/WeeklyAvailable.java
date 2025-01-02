@@ -1,5 +1,6 @@
 package com.dut.doctorcare.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class WeeklyAvailable extends BaseClazz{
 
     @ManyToOne
     @JoinColumn(name = "doctor_id")
+    @JsonBackReference
     private Doctor doctor;
 
 }

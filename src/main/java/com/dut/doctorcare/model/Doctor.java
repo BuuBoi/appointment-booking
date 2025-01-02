@@ -1,5 +1,6 @@
 package com.dut.doctorcare.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -54,7 +55,8 @@ public class Doctor extends BaseClazz {
     @OneToMany(mappedBy = "doctor")
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "doctor")
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<WeeklyAvailable> weeklyAvailables;
 
     @Column(name = "full_name", nullable = false)

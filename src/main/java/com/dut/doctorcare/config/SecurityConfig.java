@@ -31,7 +31,12 @@ public class SecurityConfig {
             "/api/auth/token",
             "/api/auth/introspect",
             "/api/register",
-            "api/weekly-available/grouped"
+            "api/weekly-available/grouped",
+            "api/specializations",
+            "api/services",
+             "/api/doctors",
+            "/api/doctors/{doctorId}",
+
     };
 
     @Value("${jwt.signerKey}")

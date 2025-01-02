@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {AddressMapper.class, CustomeMapper.class, SpecializationMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressMapper.class, CustomeMapper.class, ServiceMapper.class})
 public interface DoctorMapper {
     @Mapping(target = "id", ignore = true) // Bỏ qua trường id khi mapping
     @Mapping(target = "gender", source = "gender", qualifiedByName = "stringToGender")
@@ -19,8 +19,9 @@ public interface DoctorMapper {
 
 //    @Mapping(target = "gender", source = "gender", qualifiedByName = "genderToString")
 //    @Mapping(target = "dateOfBirth", source = "dateOfBirth", qualifiedByName = "localDateToString")
-//    @Mapping(target = "address", source = "address")
-//    @Mapping(target = "specializationDto", source = "specialization")
+    @Mapping(target = "specialization", source = "specialization")
+    @Mapping(target = "service", source = "service")
+    @Mapping(target = "weeklyAvailables", ignore = true)
     DoctorResponse toDoctorResponse(Doctor doctor);
 
     @Mapping(target = "id", ignore = true)
