@@ -12,6 +12,7 @@ import com.dut.doctorcare.repositories.UserRepository;
 import com.dut.doctorcare.service.iface.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
     public final PatientRepository patientRepository;
+    @Autowired
+    private EmailNotificationService emailNotificationService;
 
 
     @Override
@@ -43,6 +46,11 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointment.setPatient(patientRepository.findById(UUID.fromString(request.getPatientId())).orElse(null));
         }
         appointment = appointmentRepository.save(appointment);
+        try {
+            emailNotificationService.sendDoctorAppointmentNotification(appointment);
+        } catch (Exception e) {
+            log.error("Failed to send doctor notification email", e);
+        }
         return appointmentMapper.toDto(appointment);
     }
 
@@ -90,6 +98,11 @@ public class AppointmentServiceImpl implements AppointmentService {
             existingAppointment.setMeetingLink(request.getMeetingLink());
         }
         Appointment updatedAppointment = appointmentRepository.save(existingAppointment);
+        try {
+            emailNotificationService.sendPatientStatusNotification(updatedAppointment);
+        } catch (Exception e) {
+            log.error("Failed to send patient notification email", e);
+        }
         return appointmentMapper.toDto(updatedAppointment);
     }
 

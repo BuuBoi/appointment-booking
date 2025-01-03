@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /DoctorCare
 spring:
+  application:
+    name: NGUYENVIETBUU
   datasource:
     url: jdbc:mysql://localhost:3306/doctorcare888
     username: root
@@ -15,10 +17,21 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: nguyenvietbuu2001@gmail.com
+    password: igtm wrtm obch rkig
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 
 jwt:
   signerKey: "2DU0iJ0m/Mug/wRqkvV78yjsbIPTss8pKA6ju5fNMfqt+jEAs9zzkLH6smWW0vmC"
-
 
 springdoc:
   api-docs:
