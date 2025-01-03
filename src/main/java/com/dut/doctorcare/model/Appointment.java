@@ -1,5 +1,6 @@
 package com.dut.doctorcare.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -76,9 +77,19 @@ public class Appointment extends BaseClazz {
     @Column(name="reason")
     private String reason;
 
+    @Column(name="meeting_link")
+    private String meetingLink;
 
+    @Column(name="meeting_provider")
+    private String meetingProvider;
+
+
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public enum Status {
-        PENDING, ACCEPTED, REJECTED, COMPLETED
+        PENDING,
+        ACCEPTED,
+        REJECTED
     }
 
 }

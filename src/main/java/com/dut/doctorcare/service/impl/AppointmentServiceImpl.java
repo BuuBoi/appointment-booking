@@ -72,10 +72,24 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment existingAppointment = appointmentRepository.findById(UUID.fromString(appointmentId))
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Appointment updatedAppointment = appointmentMapper.toEntity(request);
-        updatedAppointment.setId(existingAppointment.getId());
-        updatedAppointment = appointmentRepository.save(updatedAppointment);
+        //code nay khong chinh xac,vi update 2 truong thi khong can tao nguyen 1 doi tuong moi, thu hai la
+        //trong mapper ta ignore cac truong doctor, patient, user nen updateAppointment bi null cac truong doctor
+        //patient, user, vi vay trong csdl khong khong co id cua doctor truy van bi loi
+        //ma cung khong the bo ignore trong mapper vi payload gui len co the thieu cac truuong nay nen bi loi mapStruct vs method get
+        // bay gio chinh sua lai code o duoi
+//        Appointment updatedAppointment = appointmentMapper.toEntity(request);
+//        log.info(String.valueOf(existingAppointment.getId()));
+//        updatedAppointment.setId(existingAppointment.getId());
+//        updatedAppointment = appointmentRepository.save(updatedAppointment)
+//code moi
+        if (request.getStatus() != null) {
+            existingAppointment.setStatus(request.getStatus());
+        }
 
+        if (request.getMeetingLink() != null) {
+            existingAppointment.setMeetingLink(request.getMeetingLink());
+        }
+        Appointment updatedAppointment = appointmentRepository.save(existingAppointment);
         return appointmentMapper.toDto(updatedAppointment);
     }
 

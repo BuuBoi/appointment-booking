@@ -1,18 +1,20 @@
 package com.dut.doctorcare.dto.request;
 
+import com.dut.doctorcare.model.Appointment;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 @Data
-@Getter
-@Setter
 public class AppointmentDto {
 
         private String id;
-        private String status;
+//        private Appointment.Status status = Appointment.Status.PENDING;
+        @JsonProperty("status") // dam bao dung ten status khi nhan request
+        private Appointment.Status status = Appointment.Status.PENDING;
         private Double fee;
         private String doctorId;
         private String patientId;
@@ -29,5 +31,7 @@ public class AppointmentDto {
         private String occupation;
         private String phone;
         private String reason;
+        private String meetingLink;
+
     }
 
