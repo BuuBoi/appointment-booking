@@ -5,6 +5,7 @@ import com.dut.doctorcare.exception.AppException;
 import com.dut.doctorcare.exception.ErrorCode;
 import com.dut.doctorcare.mapper.AppointmentMapper;
 import com.dut.doctorcare.model.Appointment;
+import com.dut.doctorcare.model.Patient;
 import com.dut.doctorcare.repositories.AppointmentRepository;
 import com.dut.doctorcare.repositories.DoctorRepository;
 import com.dut.doctorcare.repositories.PatientRepository;
@@ -13,6 +14,8 @@ import com.dut.doctorcare.service.iface.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +42,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     public AppointmentDto createAppointment(AppointmentDto request) {
         Appointment appointment = appointmentMapper.toEntity(request);
         appointment.setDoctor(doctorRepository.findById(UUID.fromString(request.getDoctorId())).orElseThrow());
-        if(request.getUserId()!= null){
+        if (request.getUserId() != null) {
             appointment.setUser(userRepository.findById(UUID.fromString(request.getUserId())).orElse(null));
         }
-        if(request.getPatientId()!= null){
+        if (request.getPatientId() != null) {
             appointment.setPatient(patientRepository.findById(UUID.fromString(request.getPatientId())).orElse(null));
         }
         appointment = appointmentRepository.save(appointment);
@@ -75,6 +78,9 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .collect(Collectors.toList());
     }
 
+
+
+
     @Override
     public AppointmentDto updateAppointment(String appointmentId, AppointmentDto request) {
         Appointment existingAppointment = appointmentRepository.findById(UUID.fromString(appointmentId))
@@ -97,7 +103,29 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (request.getMeetingLink() != null) {
             existingAppointment.setMeetingLink(request.getMeetingLink());
         }
-        Appointment updatedAppointment = appointmentRepository.save(existingAppointment);
+
+        final Appointment updatedAppointment = appointmentRepository.save(existingAppointment);
+
+        if (Appointment.Status.ACCEPTED.equals(request.getStatus())) {
+            try {
+                // Kiểm tra patient dựa vào tên và số điện thoại
+                Patient patient = patientRepository
+                        .findByFullNameAndPhoneNumber(
+                                existingAppointment.getFullName(),
+                                existingAppointment.getPhone()
+                        )
+                        .orElseGet(() -> createNewPatient(updatedAppointment));
+
+                patient = patientRepository.save(patient);
+                updatedAppointment.setPatient(patient);
+                appointmentRepository.save(updatedAppointment);
+
+            } catch (Exception e) {
+                log.error("Failed to create/update patient record", e);
+//                throw new AppException(ErrorCode.PATIENT_CREATION_FAILED);
+            }
+        }
+
         try {
             emailNotificationService.sendPatientStatusNotification(updatedAppointment);
         } catch (Exception e) {
@@ -112,5 +140,19 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         appointmentRepository.deleteById(UUID.fromString(appointmentId));
+    }
+
+    private Patient createNewPatient(Appointment appointment) {
+        Patient patient = new Patient();
+
+        patient.setFullName(appointment.getFullName());
+        patient.setPhoneNumber(appointment.getPhone());
+        patient.setEmail(appointment.getEmail());  // vẫn lưu email để liên hệ
+        patient.setGender(Patient.Gender.valueOf(appointment.getGender()));
+        patient.setDateOfBirth(appointment.getDob());
+        patient.setAddress(appointment.getAddress());
+        patient.setOccupation(appointment.getOccupation());
+
+        return patientRepository.save(patient);
     }
 }

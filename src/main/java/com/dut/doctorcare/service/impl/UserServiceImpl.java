@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -116,14 +117,42 @@ public class UserServiceImpl implements UserService {
 
     //lay thong tin user dang dang nhap ma khong can truyen id
     //sau khi dang nhap thanh cong thi info dc luu tru trong security context
+//    @Transactional
+//    @Override
+//    public UserResponseDto getMyProfile() {
+//        log.info("Get my profile");
+//        var context = SecurityContextHolder.getContext();
+//        var email = context.getAuthentication().getName();
+//        User user = userDao.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+//        return UserUtils.convertToDTO(user);
+//    }
+
     @Transactional
     @Override
     public UserResponseDto getMyProfile() {
-        var context = SecurityContextHolder.getContext();
-        var email = context.getAuthentication().getName();
-        User user = userDao.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        log.info("Get my profile");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Kiểm tra và log authentication
+        log.info("Authentication: {}", authentication);
+        log.info("Authentication principal: {}", authentication.getPrincipal());
+
+        if (authentication == null || authentication.getName().equals("anonymousUser")) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        String email = authentication.getName();
+        log.info("Email from security context: {}", email);
+
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("User not found with email: {}", email);
+                    return new AppException(ErrorCode.USER_NOT_FOUND);
+                });
+
         return UserUtils.convertToDTO(user);
     }
+
 
 
     @Override

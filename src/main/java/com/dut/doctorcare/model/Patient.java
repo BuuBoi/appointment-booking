@@ -1,5 +1,6 @@
 package com.dut.doctorcare.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,11 +23,13 @@ import java.util.UUID;
 @Table(name = "patients")
 public class Patient extends BaseClazz {
 
+//    private String medicalDocument;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "id")
-    private User user;
+    @Column(name="email")
+    private String email;
+
+    @Column(name="occupation")
+    private String occupation;
 
     @Column(name = "full_name", nullable = false)
     private String fullName;
@@ -43,20 +47,21 @@ public class Patient extends BaseClazz {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @OneToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
-
-    @OneToMany(mappedBy = "patient")
-    private List<HistoryMedical> historyMedicals;
+    @Column(name = "address")
+    private String address;
 
     @OneToMany(mappedBy = "patient")
     private List<Appointment> appointments;
 
     @OneToMany(mappedBy = "patient")
+    private List<HistoryMedical> historyMedicals;
+
+
+
+    @OneToMany(mappedBy = "patient")
     private List<Review> reviews;
     // Enum for Gender
     public enum Gender {
-        MALE, FEMALE, OTHER
+        male, female, other
     }
 }

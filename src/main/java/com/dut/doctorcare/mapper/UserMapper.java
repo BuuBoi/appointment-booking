@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = {RoleMapper.class, CustomeMapper.class})
 public interface UserMapper {
     @Mapping(target = "passwordHash", source = "password", qualifiedByName = "encodePassword")
-    @Mapping(target = "patient", ignore = true) // Bỏ qua ánh xạ trường patient
     @Mapping(target = "doctor", ignore = true) // Bỏ qua ánh xạ trường doctor
     User toUser(UserRegistrationDto userRegistrationDto);
     UserResponseDto toUserResponseDto(User user);

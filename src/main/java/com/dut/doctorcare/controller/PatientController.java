@@ -61,14 +61,6 @@ public class PatientController {
                 .build();
     }
 
-//    @PutMapping("/{patientId}")
-//    public ApiResponse<PatientResponse> updatePatient(@PathVariable String patientId, @RequestBody PatientRequest patientRequest) {
-//        PatientResponse patientResponse = patientService.saveOrUpdate(patientId, patientRequest);
-//        return ApiResponse.<PatientResponse>builder()
-//                .status(200)
-//                .data(patientResponse)
-//                .build();
-//    }
-//
+
 
 }

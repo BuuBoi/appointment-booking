@@ -19,4 +19,5 @@ public interface DoctorService {
     Doctor setServiceForDoctor(String doctorId, String serviceId);
     SpecializationDto getSpecializationByDoctorId(String doctorId);
     Doctor setSpecializationForDoctor(String doctorId, String serviceId);
+    List<PatientResponse> getMyPatient(String doctorId);
 }

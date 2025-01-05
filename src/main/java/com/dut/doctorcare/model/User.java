@@ -41,19 +41,17 @@ public class User extends BaseClazz {
 	@Column(name = "role", nullable = false)
 	private String role;
 
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-	private Patient patient;
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private Doctor doctor;
 
-	public String getFullName() {
-		if (this.patient != null) {
-			return this.patient.getFullName();
-		}
-		if (this.doctor != null) {
-			return this.doctor.getFullName();
-		}
-		return null;
-	}
+//	public String getFullName() {
+//		if (this.patient != null) {
+//			return this.patient.getFullName();
+//		}
+//		if (this.doctor != null) {
+//			return this.doctor.getFullName();
+//		}
+//		return null;
+//	}
 }

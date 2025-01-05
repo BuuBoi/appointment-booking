@@ -4,6 +4,7 @@ import com.dut.doctorcare.dto.request.*;
 import com.dut.doctorcare.dto.response.ApiResponse;
 import com.dut.doctorcare.dto.response.DoctorResponse;
 import com.dut.doctorcare.dto.response.PatientResponse;
+import com.dut.doctorcare.dto.response.UserResponseDto;
 import com.dut.doctorcare.mapper.DoctorMapper;
 import com.dut.doctorcare.model.Doctor;
 import com.dut.doctorcare.model.Service;
@@ -39,11 +40,10 @@ public class DoctorController {
     }
     @GetMapping("/profile")
     public ApiResponse<DoctorResponse> getMyInfo(){
-        DoctorResponse doctorResponse = doctorService.getMyInfo();
-        return ApiResponse.<DoctorResponse>builder()
-                .status(200)
-                .data(doctorResponse)
-                .build();
+        ApiResponse<DoctorResponse> response = new ApiResponse<>();
+        response.setStatus(200);
+        response.setData(doctorService.getMyInfo());
+        return response;
     }
 
     @GetMapping
@@ -62,6 +62,7 @@ public class DoctorController {
 
     @GetMapping("/{doctorId}")
     public ResponseEntity<DoctorResponse> getDoctorById(@PathVariable String doctorId) {
+        log.info("Getting doctor with id: {}", doctorId);
         DoctorResponse doctorResponse = doctorService.getDoctorById(doctorId);
         return ResponseEntity.ok(doctorResponse);
     }
@@ -106,6 +107,13 @@ public class DoctorController {
         Doctor doctor = doctorService.setSpecializationForDoctor(doctorId, specialId);
         DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
         return ResponseEntity.ok(doctorResponse);
+    }
+
+    @GetMapping("/{doctorId}/patients")
+    public ResponseEntity<List<PatientResponse>> getMyPatient(@PathVariable String doctorId) {
+        log.info("Getting my patients:{}", doctorId);
+        List<PatientResponse> patientResponses = doctorService.getMyPatient(doctorId);
+        return ResponseEntity.ok(patientResponses);
     }
 
 

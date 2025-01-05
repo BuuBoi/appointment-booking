@@ -16,7 +16,7 @@ public interface PatientMapper {
 
     @Mapping(target = "gender", source = "gender", qualifiedByName = "genderToString")
     @Mapping(target = "dateOfBirth", source = "dateOfBirth", qualifiedByName = "localDateToString")
-    @Mapping(target = "addressDto", source = "address")
+    @Mapping(target = "id", source = "id", qualifiedByName = "uUIDToString")
     PatientResponse toPatientResponse(Patient patient);
 
     @Mapping(target = "id", ignore = true)

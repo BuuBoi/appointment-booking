@@ -110,6 +110,10 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+
+        // Cấu hình để lấy email từ subject claim
+        converter.setPrincipalClaimName("sub");
+
         JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
         authoritiesConverter.setAuthorityPrefix("ROLE_");
         converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);

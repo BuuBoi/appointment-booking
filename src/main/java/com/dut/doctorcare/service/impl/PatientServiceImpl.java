@@ -35,32 +35,32 @@ public class PatientServiceImpl implements PatientService {
         private final UserDao userDao;
         @Override
         public PatientResponse saveOrUpdate(PatientRequest patientRequest) {
-            var context = SecurityContextHolder.getContext();
-            var email = context.getAuthentication().getName();
-            User user = userDao.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-            Patient patient = patientDao.findById(user.getId()).orElse(null);
-            if(patient == null) {
-                patient = patientMapper.toPatient(patientRequest);
-                Address address = addressMapper.toAddress(patientRequest.getAddressDto());
-                address = addressDao.save(address);
-                patient.setAddress(address);
-                patient.setUser(user); //auto id user
-               return patientMapper.toPatientResponse(patientDao.save(patient));
-            }else {
-                patientMapper.updatePatientFromDto(patientRequest, patient);
-                Address address = patient.getAddress();
-                if(address.getProvince().equals(patientRequest.getAddressDto().getProvince())  ||
-                        address.getDistrict().equals(patientRequest.getAddressDto().getDistrict()) ||
-                        address.getWard().equals(patientRequest.getAddressDto().getWard()) ||
-                        address.getDetails().equals(patientRequest.getAddressDto().getDetails())) {
-                    addressMapper.updateAddressFromDto(patientRequest.getAddressDto(), address);
-                    address = addressDao.update(address);
-                    patient.setAddress(address);
-                }
-                return patientMapper.toPatientResponse(patientDao.update(patient));
-            }
+//            var context = SecurityContextHolder.getContext();
+//            var email = context.getAuthentication().getName();
+//            User user = userDao.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+//            Patient patient = patientDao.findById(user.getId()).orElse(null);
+//            if(patient == null) {
+//                patient = patientMapper.toPatient(patientRequest);
+//                Address address = addressMapper.toAddress(patientRequest.getAddressDto());
+//                address = addressDao.save(address);
+//                patient.setAddress(address);
+//                patient.setUser(user); //auto id user
+//               return patientMapper.toPatientResponse(patientDao.save(patient));
+//            }else {
+//                patientMapper.updatePatientFromDto(patientRequest, patient);
+//                Address address = patient.getAddress();
+//                if(address.getProvince().equals(patientRequest.getAddressDto().getProvince())  ||
+//                        address.getDistrict().equals(patientRequest.getAddressDto().getDistrict()) ||
+//                        address.getWard().equals(patientRequest.getAddressDto().getWard()) ||
+//                        address.getDetails().equals(patientRequest.getAddressDto().getDetails())) {
+//                    addressMapper.updateAddressFromDto(patientRequest.getAddressDto(), address);
+//                    address = addressDao.update(address);
+//                    patient.setAddress(address);
+//                }
+//                return patientMapper.toPatientResponse(patientDao.update(patient));
+//            }
 
-
+    return null;
         }
     @Override
     public PatientResponse getMyInfo() {

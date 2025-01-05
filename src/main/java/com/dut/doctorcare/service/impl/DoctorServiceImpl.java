@@ -9,37 +9,37 @@ import com.dut.doctorcare.dto.request.DoctorRequest;
 import com.dut.doctorcare.dto.request.ServiceDto;
 import com.dut.doctorcare.dto.request.SpecializationDto;
 import com.dut.doctorcare.dto.response.DoctorResponse;
+import com.dut.doctorcare.dto.response.PatientResponse;
+import com.dut.doctorcare.dto.response.UserResponseDto;
 import com.dut.doctorcare.exception.AppException;
 import com.dut.doctorcare.exception.ErrorCode;
-import com.dut.doctorcare.mapper.AddressMapper;
-import com.dut.doctorcare.mapper.DoctorMapper;
-import com.dut.doctorcare.mapper.ServiceMapper;
-import com.dut.doctorcare.mapper.SpecializationMapper;
-import com.dut.doctorcare.model.Address;
-import com.dut.doctorcare.model.Doctor;
+import com.dut.doctorcare.mapper.*;
+import com.dut.doctorcare.model.*;
 
-import com.dut.doctorcare.model.User;
-import com.dut.doctorcare.model.WeeklyAvailable;
-import com.dut.doctorcare.repositories.DoctorRepository;
-import com.dut.doctorcare.repositories.ServiceRepository;
-import com.dut.doctorcare.repositories.SpecializationRepository;
-import com.dut.doctorcare.repositories.UserRepository;
+import com.dut.doctorcare.repositories.*;
 import com.dut.doctorcare.service.iface.AddressService;
 import com.dut.doctorcare.service.iface.DoctorService;
+import com.dut.doctorcare.service.iface.UserService;
+import com.nimbusds.jose.JWSObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.ZoneId;
+import java.util.*;
+import java.sql.Date;
 import java.util.stream.Collectors;
+
+import static com.dut.doctorcare.exception.ErrorCode.USER_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -59,12 +59,17 @@ public class DoctorServiceImpl implements DoctorService {
     private final ServiceMapper serviceMapper;
     private final ServiceRepository serviceRepository;
     private final SpecializationRepository specializationRepository;
+    private final PatientMapper patientMapper;
+    private final AppointmentRepository appointmentRepository;
+    private final UserService userService;
+
 
     @Override
     public DoctorResponse saveOrUpdate(DoctorRequest request) {
         var context = SecurityContextHolder.getContext();
         var email = context.getAuthentication().getName();
-        User user = userDao.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        log.info("email: {}", email);
+        User user = userDao.findByEmail(email).orElseThrow(() -> new AppException(USER_NOT_FOUND));
         Doctor doctor = doctorDao.findById(user.getId()).orElse(null);
         if(doctor == null) {
             Address address = addressDao.save(addressMapper.toAddress(request.getAddressDto()));
@@ -112,7 +117,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public DoctorResponse getDoctorById(String doctorId) {
-        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(USER_NOT_FOUND));
         DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
         Map<String,List<String>> groupedweeklyAvailable = doctor.getWeeklyAvailables().stream()
                 .collect(Collectors.groupingBy(
@@ -125,10 +130,23 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public DoctorResponse getMyInfo() {
-        var context = SecurityContextHolder.getContext();
-        var email = context.getAuthentication().getName();
-        User user = userDao.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        Doctor doctor = doctorDao.findById(user.getId()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        log.info("Get my profile");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Kiểm tra và log authentication
+        log.info("Authentication: {}", authentication);
+        log.info("Authentication principal: {}", authentication.getPrincipal());
+
+        if (authentication == null || authentication.getName().equals("anonymousUser")) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        String email = authentication.getName();
+        log.info("Email from security context: {}", email);
+
+
+        User user = userDao.findByEmail(email).orElseThrow(() -> new AppException(USER_NOT_FOUND));
+        Doctor doctor = doctorDao.findById(user.getId()).orElseThrow(() -> new AppException(USER_NOT_FOUND));
         return doctorMapper.toDoctorResponse(doctor);
     }
 
@@ -250,8 +268,8 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Doctor setServiceForDoctor(String doctorId, String serviceId) {
-        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        com.dut.doctorcare.model.Service service = serviceRepository.findById(UUID.fromString(serviceId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(USER_NOT_FOUND));
+        com.dut.doctorcare.model.Service service = serviceRepository.findById(UUID.fromString(serviceId)).orElseThrow(() -> new AppException(USER_NOT_FOUND));
         doctor.setService(service);
         return doctorRepository.save(doctor);
     }
@@ -267,10 +285,51 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Doctor setSpecializationForDoctor(String doctorId, String serviceId) {
-        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        com.dut.doctorcare.model.Specialization service = specializationRepository.findById(UUID.fromString(serviceId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(USER_NOT_FOUND));
+        com.dut.doctorcare.model.Specialization service = specializationRepository.findById(UUID.fromString(serviceId)).orElseThrow(() -> new AppException(USER_NOT_FOUND));
         doctor.setSpecialization(service);
         return doctorRepository.save(doctor);
     }
+    private String extractDoctorIdFromToken(Authentication authentication) {
+        // Handle Nimbus JWT token
+        if (authentication.getCredentials() instanceof String) {
+            String token = (String) authentication.getCredentials();
+            try {
+                JWSObject jwsObject = JWSObject.parse(token);
+                Map<String, Object> claims = jwsObject.getPayload().toJSONObject();
+                return (String) claims.get("id");
+            } catch (ParseException e) {
+                throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+            }
+        }
+        throw new AppException(ErrorCode.UNAUTHENTICATED);
+    }
+    @Transactional
+    @Override
+    public List<PatientResponse> getMyPatient(String doctorId) {
+        return appointmentRepository
+                    .findDistinctPatientsByDoctorAndStatus(
+                            UUID.fromString(doctorId),
+                            Appointment.Status.ACCEPTED.toString()
+                    )
+                    .stream()
+                    .map(row ->
+                        new PatientResponse(
+                                row[0].toString(),
+                                (String) row[1],
+                                (String) row[2],
+                                (String) row[3],
+                                (String) row[4],
+                                (String) row[5],
+                                (String) row[6],
+                                ((java.sql.Date) row[7]).toLocalDate(),
+                                (String) row[8]
+                        )
+                    )
+                    .collect(Collectors.toList());
+    }
+
+
+
 }
 
