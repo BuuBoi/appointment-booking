@@ -2,6 +2,7 @@ package com.dut.doctorcare.service.iface;
 
 import com.dut.doctorcare.dto.request.ServiceDto;
 import com.dut.doctorcare.dto.request.SpecializationDto;
+import com.dut.doctorcare.dto.response.ServiceDoctorResponse;
 import com.dut.doctorcare.model.Service;
 import com.dut.doctorcare.model.Specialization;
 
@@ -14,5 +15,6 @@ public interface ServiceService {
     Service getServiceById(UUID id);
     ServiceDto updateService(UUID id, ServiceDto request);
     void deleteService(UUID id);
+    List<ServiceDoctorResponse> getDoctorsByServiceSlug(String slug);
 
 }

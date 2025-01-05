@@ -328,6 +328,13 @@ public class DoctorServiceImpl implements DoctorService {
                     )
                     .collect(Collectors.toList());
     }
+    //get appointment by doctor and ptient
+
+
+    @Override
+    public List<DoctorResponse> getDoctorBySpecialization(String specialSlug) {
+        return List.of();
+    }
 
 
 

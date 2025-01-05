@@ -2,6 +2,7 @@ package com.dut.doctorcare.controller;
 
 import com.dut.doctorcare.dto.request.ServiceDto;
 import com.dut.doctorcare.dto.response.ApiResponse;
+import com.dut.doctorcare.dto.response.ServiceDoctorResponse;
 import com.dut.doctorcare.model.Service;
 import com.dut.doctorcare.service.iface.ServiceService;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,11 @@ public class ServiceController {
 
         ServiceService.deleteService(UUID.fromString(id));
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{slug}/doctors")
+    public ResponseEntity<List<ServiceDoctorResponse>> getDoctorsByService(@PathVariable String slug) {
+        return ResponseEntity.ok(ServiceService.getDoctorsByServiceSlug(slug));
     }
 }
 

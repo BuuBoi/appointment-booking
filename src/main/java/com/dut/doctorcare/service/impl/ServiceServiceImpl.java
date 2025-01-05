@@ -1,7 +1,11 @@
 package com.dut.doctorcare.service.impl;
 
 import com.dut.doctorcare.dto.request.ServiceDto;
+import com.dut.doctorcare.dto.response.ServiceDoctorResponse;
+import com.dut.doctorcare.exception.AppException;
+import com.dut.doctorcare.exception.ErrorCode;
 import com.dut.doctorcare.exception.ResourceNotFoundException;
+import com.dut.doctorcare.mapper.DoctorMapper;
 import com.dut.doctorcare.mapper.ServiceMapper;
 import com.dut.doctorcare.model.Service;
 import com.dut.doctorcare.repositories.ServiceRepository;
@@ -23,6 +27,7 @@ public class ServiceServiceImpl implements ServiceService {
 
     private final ServiceRepository ServiceRepository;
     private final ServiceMapper ServiceMapper;
+    private final DoctorMapper doctorMapper;
 
     @Override
     public ServiceDto createService(ServiceDto request) {
@@ -63,5 +68,17 @@ public class ServiceServiceImpl implements ServiceService {
         Service Service = getServiceById(id);
         ServiceRepository.delete(Service);
     }
+
+    @Override
+    public List<ServiceDoctorResponse> getDoctorsByServiceSlug(String slug) {
+        Service service = ServiceRepository.findBySlug(slug)
+                .orElseThrow(() -> new AppException(ErrorCode.SlUG_NOT_FOUND));
+
+        return service.getDoctors().stream()
+                .map(doctorMapper::toServiceDoctorResponse)
+                .collect(Collectors.toList());
+    }
+
+
 }
 
