@@ -2,9 +2,11 @@ package com.dut.doctorcare.service.impl;
 
 import com.dut.doctorcare.dao.iface.SpecializationDao;
 import com.dut.doctorcare.dto.request.SpecializationDto;
+import com.dut.doctorcare.dto.response.ServiceDoctorResponse;
 import com.dut.doctorcare.exception.AppException;
 import com.dut.doctorcare.exception.ErrorCode;
 import com.dut.doctorcare.exception.ResourceNotFoundException;
+import com.dut.doctorcare.mapper.DoctorMapper;
 import com.dut.doctorcare.mapper.SpecializationMapper;
 import com.dut.doctorcare.model.Specialization;
 import com.dut.doctorcare.repositories.SpecializationRepository;
@@ -29,6 +31,8 @@ public class SpecializationServiceImpl implements SpecializationService {
 
     private final SpecializationRepository specializationRepository;
     private final SpecializationMapper specializationMapper;
+    private final DoctorMapper doctorMapper;
+
 
 //    public SpecializationServiceImpl(SpecializationRepository specializationRepository) {
 //        this.specializationRepository = specializationRepository;
@@ -77,6 +81,16 @@ public class SpecializationServiceImpl implements SpecializationService {
     public void deleteSpecialization(UUID id) {
         Specialization specialization = getSpecializationById(id);
         specializationRepository.delete(specialization);
+    }
+
+    @Override
+    public List<ServiceDoctorResponse> getDoctorsBySpecialSlug(String slug) {
+        Specialization special = specializationRepository.findBySlug(slug)
+                .orElseThrow(() -> new AppException(ErrorCode.SlUG_NOT_FOUND));
+
+        return special.getDoctors().stream()
+                .map(doctorMapper::toServiceDoctorResponse)
+                .collect(Collectors.toList());
     }
 }
 

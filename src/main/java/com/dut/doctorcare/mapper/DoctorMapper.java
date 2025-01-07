@@ -23,6 +23,8 @@ public interface DoctorMapper {
     @Mapping(target = "specialization", source = "specialization")
     @Mapping(target = "service", source = "service")
     @Mapping(target = "weeklyAvailables", ignore = true)
+    @Mapping( target="role" , ignore = true)
+    @Mapping(target = "email", ignore = true)
     DoctorResponse toDoctorResponse(Doctor doctor);
 
     @Mapping(target = "specialization", source = "specialization.name")

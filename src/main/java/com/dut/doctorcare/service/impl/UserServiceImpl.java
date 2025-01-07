@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserResponseDto getMyProfile() {
+    public Object getMyProfile() {
         log.info("Get my profile");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -149,6 +149,13 @@ public class UserServiceImpl implements UserService {
                     log.error("User not found with email: {}", email);
                     return new AppException(ErrorCode.USER_NOT_FOUND);
                 });
+        if("DOCTOR".equals(user.getRole())){
+            Doctor doctor = user.getDoctor();
+            DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
+            doctorResponse.setEmail(user.getEmail());
+            doctorResponse.setRole(user.getRole());
+            return doctorResponse;
+        }
 
         return UserUtils.convertToDTO(user);
     }

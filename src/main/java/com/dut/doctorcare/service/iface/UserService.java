@@ -23,5 +23,5 @@ public interface UserService {
     void deleteUser(String id) throws EntityOperationException;
     UserResponseDto updateUser(String id, UserUpdateOrDeleteDto userUpdateOrDeleteDto);
     void changePassword(String userId, PasswordChangeDto passwordChangeDto);
-    UserResponseDto getMyProfile();
+    Object getMyProfile();
 }

@@ -18,6 +18,8 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DoctorResponse {
+    private String role;
+    private String email;
     private String id;
     private String fullName;
     private AddressDto address;

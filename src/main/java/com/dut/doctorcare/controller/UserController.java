@@ -61,8 +61,8 @@ public class UserController {
         return response;
     }
     @GetMapping("/my-profile")
-    public ApiResponse<UserResponseDto> getMyInfo() {
-        ApiResponse<UserResponseDto> response = new ApiResponse<>();
+    public ApiResponse<Object> getMyInfo() {
+        ApiResponse<Object> response = new ApiResponse<>();
         response.setStatus(200);
         response.setData(userService.getMyProfile());
         return response;
