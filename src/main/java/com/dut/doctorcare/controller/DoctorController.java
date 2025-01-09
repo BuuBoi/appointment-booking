@@ -54,6 +54,15 @@ public class DoctorController {
                 .data(doctorResponses)
                 .build();
     }
+    @GetMapping("/sort")
+    public ApiResponse<List<DoctorResponse>> getAllByOrderByCreatedAtDesc() {
+        log.info("Sort");
+        List<DoctorResponse> doctorResponses = doctorService.getAllByOrderByCreatedAtDesc();
+        return ApiResponse.<List<DoctorResponse>>builder()
+                .status(200)
+                .data(doctorResponses)
+                .build();
+    }
     @PostMapping
     public ResponseEntity<Doctor> createDoctor(@Valid @RequestBody DoctorCreateDTO doctorCreateDTO) {
         Doctor createdDoctor = doctorService.createDoctor(doctorCreateDTO);
@@ -115,6 +124,8 @@ public class DoctorController {
         List<PatientResponse> patientResponses = doctorService.getMyPatient(doctorId);
         return ResponseEntity.ok(patientResponses);
     }
+
+
 
 
 

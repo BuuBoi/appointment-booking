@@ -21,4 +21,5 @@ public interface DoctorService {
     Doctor setSpecializationForDoctor(String doctorId, String serviceId);
     List<PatientResponse> getMyPatient(String doctorId);
     List<DoctorResponse> getDoctorBySpecialization(String specialSlug);
+    List<DoctorResponse> getAllByOrderByCreatedAtDesc();
 }

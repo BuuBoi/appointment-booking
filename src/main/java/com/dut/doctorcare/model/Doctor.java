@@ -1,5 +1,6 @@
 package com.dut.doctorcare.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -62,7 +63,9 @@ public class Doctor extends BaseClazz {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status = Status.PENDING;
 
     private BigDecimal price;
     private String position;
@@ -123,6 +126,11 @@ public class Doctor extends BaseClazz {
     @Column(name = "trucking_number")
     private String truckingNumber;
 
-
-
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    public enum Status {
+        PENDING,
+        ACCEPTED,
+        REJECTED
+    }
 }

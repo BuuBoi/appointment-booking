@@ -58,6 +58,7 @@ public class ServiceServiceImpl implements ServiceService {
         Service Service = getServiceById(id);
         Service.setName(ServiceDetails.getName());
         Service.setSlug(ServiceDetails.getSlug());
+        Service.setImageUrl(ServiceDetails.getImageUrl());
         Service spe =  ServiceRepository.save(Service);
 
         return ServiceMapper.toServiceDto(spe);

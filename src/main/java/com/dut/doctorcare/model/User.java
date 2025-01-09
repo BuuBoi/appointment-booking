@@ -22,7 +22,7 @@ import java.util.Set;
 @Table(name = "users")
 public class User extends BaseClazz {
 
-	@Column(name = "full_name", nullable = false, unique = true)
+	@Column(name = "full_name", nullable = false)
 	private String fullName;
 
 	@Column(name = "email", nullable = false, unique = true)

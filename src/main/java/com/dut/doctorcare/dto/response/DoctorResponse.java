@@ -22,6 +22,7 @@ public class DoctorResponse {
     private String email;
     private String id;
     private String fullName;
+    private String status;
     private AddressDto address;
     private BigDecimal price;
     private String position;

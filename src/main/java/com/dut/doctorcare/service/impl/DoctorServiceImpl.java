@@ -181,20 +181,57 @@ public class DoctorServiceImpl implements DoctorService {
     }
     @Override
     public Doctor updateDoctor(String id, Map<String,Object> fields) {
-        // Lấy thông tin Doctor từ database
-        Optional<Doctor> doctorOptional = doctorRepository.findById(UUID.fromString(id));
-        if (doctorOptional.isEmpty()) {
-            throw new IllegalArgumentException("Doctor không tồn tại với ID: " + id);
-        }
+        Doctor doctor;
 
-        Doctor doctor = doctorOptional.get();
-        // Khởi tạo các quan hệ lazy-loaded của Doctor
-        Hibernate.initialize(doctor.getAddress()); // Khởi tạo Address nếu cần
-       // Hibernate.initialize(doctor.getSpecialization()); // Khởi tạo Specialization nếu cần
+        // Check if doctor exists
+        Optional<Doctor> doctorOptional = doctorRepository.findById(UUID.fromString(id));
+
+        if (doctorOptional.isPresent()) {
+            doctor = doctorOptional.get();
+            // Initialize lazy relationships if doctor exists
+            Hibernate.initialize(doctor.getAddress());
+        } else {
+            // Check if user exists for create case
+            User user = userRepository.findById(UUID.fromString(id))
+                    .orElseThrow(() -> new IllegalArgumentException("User không tồn tại với ID: " + id));
+
+            // Create new doctor if not exists
+            doctor = Doctor.builder()
+                    .user(user)
+                    .build();
+        }
 
         // Cập nhật thông tin Doctor
         fields.forEach((key, value) -> {
+            if(value != null) {
             switch (key) {
+                case "fullName":
+                    doctor.setFullName((String) value);
+                    break;
+                case "bio":
+                    doctor.setBio((String) value);
+                    break;
+                case "dob":
+                    doctor.setDateOfBirth(LocalDate.parse((String) value));
+                    break;
+                    case "gender":
+                    doctor.setGender((String) value);
+                    break;
+                case "medicalLicense":
+                    doctor.setMedicalLicense((String) value);
+                    break;
+                case "medicalLicenseExpiry":
+                    doctor.setMedicalLicenseExpiry(LocalDate.parse((String) value));
+                    break;
+                case "profilePicture":
+                    doctor.setProfilePicture((String) value);
+                    break;
+                case "truckingNumber":
+                    doctor.setTruckingNumber((String) value);
+                    break;
+                case "yearsOfExperience":
+                    doctor.setYearsOfExperience((int) value);
+                    break;
                 case "price":
                     BigDecimal price = new BigDecimal(value.toString());
                     doctor.setPrice(price);
@@ -251,9 +288,9 @@ public class DoctorServiceImpl implements DoctorService {
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown field: " + key);
-    }});
+    }}});
 
-        // Lưu Doctor vào database
+          // Lưu Doctor vào database
         return doctorRepository.save(doctor);
     }
 
@@ -336,6 +373,10 @@ public class DoctorServiceImpl implements DoctorService {
         return List.of();
     }
 
+    @Override
+    public List<DoctorResponse> getAllByOrderByCreatedAtDesc() {
+        return doctorRepository.findAllByOrderByCreatedAtDesc().stream().map(doctorMapper::toDoctorResponse).collect(Collectors.toList());
+    }
 
 
 }
