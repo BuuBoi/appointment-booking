@@ -20,10 +20,16 @@ import com.dut.doctorcare.repositories.*;
 import com.dut.doctorcare.service.iface.AddressService;
 import com.dut.doctorcare.service.iface.DoctorService;
 import com.dut.doctorcare.service.iface.UserService;
+import com.dut.doctorcare.specification.DoctorSpecification;
 import com.nimbusds.jose.JWSObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -378,6 +384,18 @@ public class DoctorServiceImpl implements DoctorService {
         return doctorRepository.findAllByOrderByCreatedAtDesc().stream().map(doctorMapper::toDoctorResponse).collect(Collectors.toList());
     }
 
+    @Override
+    public Page<DoctorResponse> searchDoctors(String name, String address, String specialization, String service, int page, int size) {
+        Specification<Doctor> spec = DoctorSpecification.filterDoctors(name, address, specialization, service);
+        Pageable pageable = PageRequest.of(page-1, size);
+        Page<Doctor> doctorPage= doctorRepository.findAll(spec, pageable);
+        // Chuyển đổi mỗi đối tượng Doctor thành DoctorResponseDTO
+        List<DoctorResponse> doctorResponseDTOList = doctorPage.getContent().stream()
+                .map(doctor -> doctorMapper.toDoctorResponse(doctor))
+                .collect(Collectors.toList());
 
+
+        return new PageImpl<>(doctorResponseDTOList, pageable, doctorPage.getTotalElements());
+    }
 }
 

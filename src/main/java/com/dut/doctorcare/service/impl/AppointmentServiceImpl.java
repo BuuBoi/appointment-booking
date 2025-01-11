@@ -78,7 +78,12 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .collect(Collectors.toList());
     }
 
-
+    @Override
+    public List<AppointmentDto> getAppointmentByPatientId(String patientId) {
+        return appointmentRepository.findByUserId(UUID.fromString(patientId)).stream()
+                .map(appointmentMapper::toDto)
+                .collect(Collectors.toList());
+    }
 
 
     @Override
@@ -141,6 +146,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         appointmentRepository.deleteById(UUID.fromString(appointmentId));
     }
+
+
 
     private Patient createNewPatient(Appointment appointment) {
         Patient patient = new Patient();

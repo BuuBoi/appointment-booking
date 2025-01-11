@@ -52,4 +52,10 @@ public class AppointmentController {
         List<AppointmentDto> appointments = appointmentService.getAppointmentByDoctorId(doctorId);
         return ResponseEntity.ok(appointments);
     }
+
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByPatient(@PathVariable String patientId) {
+        List<AppointmentDto> appointments = appointmentService.getAppointmentByPatientId(patientId);
+        return ResponseEntity.ok(appointments);
+    }
 }

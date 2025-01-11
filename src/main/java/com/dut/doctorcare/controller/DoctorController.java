@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -126,7 +128,18 @@ public class DoctorController {
     }
 
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<DoctorResponse>> searchDoctors(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false) String service,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
+        Page<DoctorResponse> doctors = doctorService.searchDoctors(name, address, specialization, service,  page, size);
+        return ResponseEntity.ok(doctors);
+    }
 
 
 

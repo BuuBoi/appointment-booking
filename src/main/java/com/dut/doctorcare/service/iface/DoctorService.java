@@ -4,6 +4,8 @@ import com.dut.doctorcare.dto.request.*;
 import com.dut.doctorcare.dto.response.DoctorResponse;
 import com.dut.doctorcare.dto.response.PatientResponse;
 import com.dut.doctorcare.model.Doctor;
+import org.springframework.data.domain.Page;
+
 
 import java.util.List;
 import java.util.Map;
@@ -22,4 +24,5 @@ public interface DoctorService {
     List<PatientResponse> getMyPatient(String doctorId);
     List<DoctorResponse> getDoctorBySpecialization(String specialSlug);
     List<DoctorResponse> getAllByOrderByCreatedAtDesc();
+    Page<DoctorResponse> searchDoctors(String name, String address, String specialization, String service, int page, int size);
 }
