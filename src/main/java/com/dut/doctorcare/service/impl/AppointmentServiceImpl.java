@@ -162,4 +162,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         return patientRepository.save(patient);
     }
+
+    // Lấy danh sách các cuộc hẹn giữa bác sĩ và bệnh nhân
+    public List<AppointmentDto> getAppointmentsByDoctorAndPatient(UUID doctorId, UUID patientId) {
+        List<Appointment> appointment= appointmentRepository.findAllByDoctorIdAndPatientId(doctorId, patientId);
+        List<AppointmentDto> appointmentDtos = appointment.stream()
+                .map(appointmentMapper::toDto)
+                .collect(Collectors.toList());
+        return appointmentDtos;
+    }
 }

@@ -356,9 +356,10 @@ public class DoctorServiceImpl implements DoctorService {
                             Appointment.Status.ACCEPTED.toString()
                     )
                     .stream()
-                    .map(row ->
-                        new PatientResponse(
-                                row[0].toString(),
+                    .map(row ->{
+
+                       return new PatientResponse(
+                                (String) row[0],
                                 (String) row[1],
                                 (String) row[2],
                                 (String) row[3],
@@ -367,7 +368,7 @@ public class DoctorServiceImpl implements DoctorService {
                                 (String) row[6],
                                 ((java.sql.Date) row[7]).toLocalDate(),
                                 (String) row[8]
-                        )
+                        );}
                     )
                     .collect(Collectors.toList());
     }

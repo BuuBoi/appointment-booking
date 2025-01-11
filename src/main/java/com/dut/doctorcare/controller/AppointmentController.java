@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -56,6 +57,11 @@ public class AppointmentController {
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<AppointmentDto>> getAppointmentsByPatient(@PathVariable String patientId) {
         List<AppointmentDto> appointments = appointmentService.getAppointmentByPatientId(patientId);
+        return ResponseEntity.ok(appointments);
+    }
+    @GetMapping("/doctor/{doctorId}/patient/{patientId}")
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByDoctorAndPatient(@PathVariable String doctorId, @PathVariable String patientId) {
+        List<AppointmentDto> appointments = appointmentService.getAppointmentsByDoctorAndPatient(UUID.fromString(doctorId), UUID.fromString(patientId));
         return ResponseEntity.ok(appointments);
     }
 }
