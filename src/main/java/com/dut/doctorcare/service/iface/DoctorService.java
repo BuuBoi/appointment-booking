@@ -27,4 +27,5 @@ public interface DoctorService {
     Page<DoctorResponse> searchDoctors(String name, String address, String specialization, String service, int page, int size);
     DoctorResponse updateDoctorActive(String doctorId, boolean active);
     List<DoctorResponse> getAllDoctorsIncludeAllActive();
+    DoctorResponse getDoctorByAppointmentId(String appointmentId);
 }

@@ -59,6 +59,11 @@ public class AppointmentController {
         List<AppointmentDto> appointments = appointmentService.getAppointmentByPatientId(patientId);
         return ResponseEntity.ok(appointments);
     }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<AppointmentDto>> getAppointmentsByUser(@PathVariable String userId) {
+        List<AppointmentDto> appointments = appointmentService.getAppointmentByUserId(userId);
+        return ResponseEntity.ok(appointments);
+    }
     @GetMapping("/doctor/{doctorId}/patient/{patientId}")
     public ResponseEntity<List<AppointmentDto>> getAppointmentsByDoctorAndPatient(@PathVariable String doctorId, @PathVariable String patientId) {
         List<AppointmentDto> appointments = appointmentService.getAppointmentsByDoctorAndPatient(UUID.fromString(doctorId), UUID.fromString(patientId));

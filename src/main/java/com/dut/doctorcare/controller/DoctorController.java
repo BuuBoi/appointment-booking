@@ -168,7 +168,11 @@ public class DoctorController {
         return ResponseEntity.ok(doctors);
     }
 
-
+    @GetMapping("/appointment/{appointmentId}")
+    public ResponseEntity<DoctorResponse> getDoctorByAppointmentId(@PathVariable String appointmentId) {
+        DoctorResponse doctorResponse = doctorService.getDoctorByAppointmentId(appointmentId);
+        return ResponseEntity.ok(doctorResponse);
+    }
 
 
 

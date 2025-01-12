@@ -424,5 +424,12 @@ public class DoctorServiceImpl implements DoctorService {
 //            doctorMapper.toDoctorResponse(doctor)).collect(Collectors.toList()
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public DoctorResponse getDoctorByAppointmentId(String appointmentId) {
+        Appointment appointment = appointmentRepository.findById(UUID.fromString(appointmentId))
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return doctorMapper.toDoctorResponse(appointment.getDoctor());
+    }
 }
 
