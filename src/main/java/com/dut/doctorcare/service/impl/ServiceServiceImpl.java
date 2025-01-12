@@ -7,6 +7,7 @@ import com.dut.doctorcare.exception.ErrorCode;
 import com.dut.doctorcare.exception.ResourceNotFoundException;
 import com.dut.doctorcare.mapper.DoctorMapper;
 import com.dut.doctorcare.mapper.ServiceMapper;
+import com.dut.doctorcare.model.Doctor;
 import com.dut.doctorcare.model.Service;
 import com.dut.doctorcare.repositories.ServiceRepository;
 import com.dut.doctorcare.service.iface.ServiceService;
@@ -76,6 +77,7 @@ public class ServiceServiceImpl implements ServiceService {
                 .orElseThrow(() -> new AppException(ErrorCode.SlUG_NOT_FOUND));
 
         return service.getDoctors().stream()
+                .filter(Doctor::isActive)
                 .map(doctorMapper::toServiceDoctorResponse)
                 .collect(Collectors.toList());
     }

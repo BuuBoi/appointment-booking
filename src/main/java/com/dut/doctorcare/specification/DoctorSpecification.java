@@ -39,7 +39,8 @@ public class DoctorSpecification {
                 Join<Doctor, Service> serviceJoin = root.join("service");
                 predicates.add(criteriaBuilder.like(serviceJoin.get("slug"), service));
             }
-
+            // Thêm điều kiện active = true
+            predicates.add(criteriaBuilder.isTrue(root.get("isActive")));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

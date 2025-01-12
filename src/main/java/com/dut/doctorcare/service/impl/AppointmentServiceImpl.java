@@ -80,7 +80,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public List<AppointmentDto> getAppointmentByPatientId(String patientId) {
-        return appointmentRepository.findByUserId(UUID.fromString(patientId)).stream()
+//        return appointmentRepository.findByUserId(UUID.fromString(patientId)).stream()
+//                .map(appointmentMapper::toDto)
+//                .collect(Collectors.toList()); ????
+        return appointmentRepository.findByPatientId(UUID.fromString(patientId)).stream()
                 .map(appointmentMapper::toDto)
                 .collect(Collectors.toList());
     }

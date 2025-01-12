@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,6 +57,15 @@ public class DoctorController {
                 .data(doctorResponses)
                 .build();
     }
+    @GetMapping("/all")
+    public ApiResponse<List<DoctorResponse>> getAllDoctorsIncludeAllActive() {
+        List<DoctorResponse> doctorResponses = doctorService.getAllDoctorsIncludeAllActive();
+        return ApiResponse.<List<DoctorResponse>>builder()
+                .status(200)
+                .data(doctorResponses)
+                .build();
+    }
+
     @GetMapping("/sort")
     public ApiResponse<List<DoctorResponse>> getAllByOrderByCreatedAtDesc() {
         log.info("Sort");
@@ -85,6 +95,23 @@ public class DoctorController {
         Doctor doctorResponse = doctorService.updateDoctor(doctorId, fields);
         DoctorResponse doctorResponse1 = doctorMapper.toDoctorResponse(doctorResponse);
         return ResponseEntity.ok(doctorResponse1);
+    }
+
+    @PutMapping("/{doctorId}/active")
+    public ResponseEntity<?> updateDoctorActive(
+            @PathVariable String doctorId,
+            @RequestParam boolean active) {
+        log.info("Updating doctor active: {}", active);
+        try {
+            DoctorResponse doctorResponse = doctorService.updateDoctorActive(doctorId, active);
+            return ResponseEntity.ok().body(Map.of(
+                    "message", "Cập nhật trạng thái thành công",
+                    "doctor", doctorResponse
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/{doctorId}/service")
@@ -140,6 +167,9 @@ public class DoctorController {
         Page<DoctorResponse> doctors = doctorService.searchDoctors(name, address, specialization, service,  page, size);
         return ResponseEntity.ok(doctors);
     }
+
+
+
 
 
 

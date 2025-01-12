@@ -13,4 +13,6 @@ import java.util.UUID;
 public interface DoctorRepository extends JpaRepository<Doctor, UUID>, JpaSpecificationExecutor<Doctor> {
     // Truy vấn tất cả bác sĩ sắp xếp theo ngày gần nhất (updatedAt giảm dần)
     List<Doctor> findAllByOrderByCreatedAtDesc();
+
+    List<Doctor> findByIsActiveTrue();
 }

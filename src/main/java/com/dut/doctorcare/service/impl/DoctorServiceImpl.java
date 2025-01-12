@@ -106,7 +106,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<DoctorResponse> getAllDoctors() {
-        List<Doctor> doctors = doctorRepository.findAll();
+        List<Doctor> doctors = doctorRepository.findByIsActiveTrue();
         doctors.forEach(doctor -> doctor.getWeeklyAvailables().size()); //dam bao duoc load truoc khi mapper
         return doctors.stream().map(doctor -> {
             DoctorResponse response = doctorMapper.toDoctorResponse(doctor);
@@ -382,7 +382,9 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<DoctorResponse> getAllByOrderByCreatedAtDesc() {
-        return doctorRepository.findAllByOrderByCreatedAtDesc().stream().map(doctorMapper::toDoctorResponse).collect(Collectors.toList());
+        return doctorRepository.findAllByOrderByCreatedAtDesc().stream()
+                .filter(Doctor::isActive)
+                .map(doctorMapper::toDoctorResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -397,6 +399,30 @@ public class DoctorServiceImpl implements DoctorService {
 
 
         return new PageImpl<>(doctorResponseDTOList, pageable, doctorPage.getTotalElements());
+    }
+
+    @Override
+    public DoctorResponse updateDoctorActive(String doctorId, boolean active) {
+        Doctor doctor = doctorRepository.findById(UUID.fromString(doctorId)).orElseThrow(() -> new AppException(USER_NOT_FOUND));
+        doctor.setActive(active);
+        return doctorMapper.toDoctorResponse(doctorRepository.save(doctor));
+    }
+
+    @Override
+    public List<DoctorResponse> getAllDoctorsIncludeAllActive() {
+        List<Doctor> doctors = doctorRepository.findAll();
+        doctors.forEach(doctor -> doctor.getWeeklyAvailables().size()); //dam bao duoc load truoc khi mapper
+        return doctors.stream().map(doctor -> {
+            DoctorResponse response = doctorMapper.toDoctorResponse(doctor);
+            Map<String,List<String>> groupedweeklyAvailable = doctor.getWeeklyAvailables().stream()
+                    .collect(Collectors.groupingBy(
+                            WeeklyAvailable::getDateOfWeek,
+                            Collectors.mapping(weeklyAvailable -> weeklyAvailable.getTimeSlot().toString(), Collectors.toList())
+                    ));
+            response.setWeeklyAvailables(groupedweeklyAvailable);
+            return response;
+//            doctorMapper.toDoctorResponse(doctor)).collect(Collectors.toList()
+        }).collect(Collectors.toList());
     }
 }
 

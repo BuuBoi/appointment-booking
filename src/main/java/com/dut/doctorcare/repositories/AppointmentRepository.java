@@ -15,6 +15,7 @@ import java.util.UUID;
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
     List<Appointment> findByDoctorId(UUID doctorId);
     List<Appointment> findByUserId(UUID userId);
+    List<Appointment> findByPatientId(UUID patientId);
     @Query(value = """
     SELECT DISTINCT BIN_TO_UUID(p.id) AS id, p.email, p.occupation, p.full_name, p.phone_number, p.gender, p.avatar, p.date_of_birth, p.address FROM patients p
     INNER JOIN appointments a ON p.id = a.patient_id

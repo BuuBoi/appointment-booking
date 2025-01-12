@@ -25,4 +25,6 @@ public interface DoctorService {
     List<DoctorResponse> getDoctorBySpecialization(String specialSlug);
     List<DoctorResponse> getAllByOrderByCreatedAtDesc();
     Page<DoctorResponse> searchDoctors(String name, String address, String specialization, String service, int page, int size);
+    DoctorResponse updateDoctorActive(String doctorId, boolean active);
+    List<DoctorResponse> getAllDoctorsIncludeAllActive();
 }

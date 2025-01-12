@@ -37,7 +37,8 @@ public class SecurityConfig {
              "/api/doctors",
             "/api/doctors/{doctorId}",
             "api/services/{slug}/doctors",
-            "api/specializations/{slug}/doctors"
+            "api/specializations/{slug}/doctors",
+            "/api/doctors/{doctorId}/active",
 
     };
 

@@ -16,6 +16,7 @@ public class ServiceDoctorResponse {
     private String id;
     private String fullName;
     private String profilePicture;
+    private boolean isActive;
     private AddressDto address;
     private int yearsOfExperience;
     private String specialization; // Just the name

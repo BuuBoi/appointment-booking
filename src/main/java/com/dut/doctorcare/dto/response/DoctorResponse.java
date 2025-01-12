@@ -18,6 +18,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DoctorResponse {
+    private boolean isActive;
     private String role;
     private String email;
     private String id;
@@ -48,4 +49,5 @@ public class DoctorResponse {
     private ServiceDto service;
     private SpecializationDto specialization;
     private Map<String, List<String>> weeklyAvailables;
+
 }
